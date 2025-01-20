@@ -1,0 +1,44 @@
+@page "/eventcard"
+@using EventEase.Models
+
+<h3>Event Card</h3>
+
+<EditForm Model="@eventModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="eventName">Event Name:</label>
+        <InputText id="eventName" class="form-control" @bind-Value="eventModel.EventName" />
+    </div>
+    <div class="form-group">
+        <label for="eventDate">Event Date:</label>
+        <InputDate id="eventDate" class="form-control" @bind-Value="eventModel.EventDate" />
+    </div>
+    <div class="form-group">
+        <label for="eventLocation">Location:</label>
+        <InputText id="eventLocation" class="form-control" @bind-Value="eventModel.Location" />
+    </div>
+    <div class="form-group">
+        <label for="eventDescription">Description:</label>
+        <InputTextArea id="eventDescription" class="form-control" @bind-Value="eventModel.Description" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    private EventModel eventModel = new EventModel
+    {
+        EventName = string.Empty,
+        Location = string.Empty,
+        Description = string.Empty
+    };
+
+    private void HandleValidSubmit()
+    {
+        Console.WriteLine($"Event Submitted: {eventModel.EventName}");
+    }
+
+    
+}

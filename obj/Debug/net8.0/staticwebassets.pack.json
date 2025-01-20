@@ -1,0 +1,61 @@
+{
+  "Files": [
+    {
+      "Id": "c:\\Users\\Amina Jawaid\\Downloads\\Coursera\\Coursera_Projects\\EventEase\\EventEase\\bin\\Debug\\net8.0\\wwwroot\\_framework\\blazor.webassembly.js",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js"
+    },
+    {
+      "Id": "c:\\Users\\Amina Jawaid\\Downloads\\Coursera\\Coursera_Projects\\EventEase\\EventEase\\obj\\Debug\\net8.0\\compressed\\3oy13zl6no.gz",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js.gz"
+    },
+    {
+      "Id": "c:\\Users\\Amina Jawaid\\Downloads\\Coursera\\Coursera_Projects\\EventEase\\EventEase\\obj\\Debug\\net8.0\\scopedcss\\bundle\\EventEase.styles.css",
+      "PackagePath": "staticwebassets\\EventEase.styles.css"
+    },
+    {
+      "Id": "c:\\Users\\Amina Jawaid\\Downloads\\Coursera\\Coursera_Projects\\EventEase\\EventEase\\wwwroot\\css\\app.css",
+      "PackagePath": "staticwebassets\\css\\app.css"
+    },
+    {
+      "Id": "c:\\Users\\Amina Jawaid\\Downloads\\Coursera\\Coursera_Projects\\EventEase\\EventEase\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "c:\\Users\\Amina Jawaid\\Downloads\\Coursera\\Coursera_Projects\\EventEase\\EventEase\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "c:\\Users\\Amina Jawaid\\Downloads\\Coursera\\Coursera_Projects\\EventEase\\EventEase\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "c:\\Users\\Amina Jawaid\\Downloads\\Coursera\\Coursera_Projects\\EventEase\\EventEase\\wwwroot\\icon-192.png",
+      "PackagePath": "staticwebassets\\icon-192.png"
+    },
+    {
+      "Id": "c:\\Users\\Amina Jawaid\\Downloads\\Coursera\\Coursera_Projects\\EventEase\\EventEase\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "c:\\Users\\Amina Jawaid\\Downloads\\Coursera\\Coursera_Projects\\EventEase\\EventEase\\wwwroot\\sample-data\\weather.json",
+      "PackagePath": "staticwebassets\\sample-data\\weather.json"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.EventEase.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.EventEase.props",
+      "PackagePath": "build\\EventEase.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.EventEase.props",
+      "PackagePath": "buildMultiTargeting\\EventEase.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.EventEase.props",
+      "PackagePath": "buildTransitive\\EventEase.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

@@ -1,0 +1,30 @@
+@page "/welcome"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@using EventEase.Models 
+
+<h3>Welcome, @UserName!</h3>
+<p>You have successfully registered with the email: @Email.</p>
+<button class="btn btn-primary" @onclick="NavigateToHome">Go to Home</button>
+
+@code {
+    private string UserName = "Guest";
+    private string Email = "not.provided@domain.com";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Call JavaScript function to get the user data from localStorage
+        var registeredUser = await JSRuntime.InvokeAsync<RegistrationModel>("localStorageHelper.getItem", "user");
+
+        if (registeredUser != null)
+        {
+            UserName = registeredUser.UserName;
+            Email = registeredUser.Email;
+        }
+    }
+
+    private void NavigateToHome()
+    {
+        Navigation.NavigateTo("/"); // Redirect to the home page
+    }
+}

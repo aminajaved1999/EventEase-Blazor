@@ -1,0 +1,78 @@
+@page "/register"
+@using System.ComponentModel.DataAnnotations
+@using EventEase.Models
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<h3>Registration Form</h3>
+
+<EditForm Model="@registrationModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="userName">Username:</label>
+        <InputText id="userName" class="form-control" @bind-Value="registrationModel.UserName" />
+        <ValidationMessage For="@(() => registrationModel.UserName)" />
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <InputText id="email" class="form-control" @bind-Value="registrationModel.Email" />
+        <ValidationMessage For="@(() => registrationModel.Email)" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <InputText id="password" class="form-control" type="password" @bind-Value="registrationModel.Password" />
+        <ValidationMessage For="@(() => registrationModel.Password)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+
+    @if (isRegistrationSuccessful)
+    {
+        <div class="alert alert-success mt-3">
+            Registration Successful! Welcome, @registrationModel.UserName!
+        </div>
+    }
+    else if (isRegistrationFailed)
+    {
+        <div class="alert alert-danger mt-3">
+            Registration failed. Please try again.
+        </div>
+    }
+</EditForm>
+
+@code {
+   private RegistrationModel registrationModel = new RegistrationModel
+   {
+       UserName = string.Empty,
+       Email = string.Empty,
+       Password = string.Empty
+   };
+
+   private bool isRegistrationSuccessful = false;
+   private bool isRegistrationFailed = false;
+
+   
+  private async Task HandleValidSubmit()
+    {
+        if (!string.IsNullOrEmpty(registrationModel.UserName) &&
+            !string.IsNullOrEmpty(registrationModel.Email) &&
+            !string.IsNullOrEmpty(registrationModel.Password))
+        {
+            // Save the registered user to localStorage
+            await JSRuntime.InvokeVoidAsync("localStorageHelper.setItem", "user", registrationModel);
+
+            isRegistrationSuccessful = true;
+            isRegistrationFailed = false;
+            Navigation.NavigateTo("/welcome");
+        }
+        else
+        {
+            isRegistrationSuccessful = false;
+            isRegistrationFailed = true;
+        }
+    }
+}

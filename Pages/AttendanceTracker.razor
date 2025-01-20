@@ -1,0 +1,34 @@
+@page "/attendancetracker"
+@using EventEase.Models
+@using System.Collections.Generic
+
+<h3>Attendance Tracker</h3>
+
+<p><strong>Attendees:</strong></p>
+<ul>
+    @foreach (var attendee in attendees)
+    {
+        <li>@attendee.Name</li>
+    }
+</ul>
+
+<div class="form-group">
+    <label for="attendeeName">Add Attendee:</label>
+    <InputText id="attendeeName" class="form-control" @bind-Value="newAttendee.Name" />
+</div>
+
+<button class="btn btn-success" @onclick="AddAttendee">Add Attendee</button>
+
+@code {
+    private List<Attendee> attendees = new List<Attendee>();
+    private Attendee newAttendee = new Attendee { Name = "" }; // Initialize Name property explicitly
+
+    private void AddAttendee()
+    {
+        if (!string.IsNullOrEmpty(newAttendee.Name))
+        {
+            attendees.Add(newAttendee);
+            newAttendee = new Attendee { Name = "" };  // Reset the input field by creating a new instance
+        }
+    }
+}
