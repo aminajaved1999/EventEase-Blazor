@@ -1,0 +1,29 @@
+# ASP.NET Core / Blazor
+bin/
+obj/
+wwwroot/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.log
+.idea/
+.vs/
+.vscode/
+
+# User-specific files
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+
+# JetBrains Rider files
+.idea/
+
+# Mac-specific files
+.DS_Store
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
