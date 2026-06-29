@@ -15,6 +15,7 @@ obj/
 ## Build artifacts
 publish/
 dist/
+release/
 
 ## OS
 .DS_Store

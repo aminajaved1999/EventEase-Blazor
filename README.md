@@ -215,6 +215,24 @@ Open `https://localhost:5001` in your browser.
 
 ---
 
+## 🌐 Deploy (free, via GitHub Pages)
+
+This repo ships a GitHub Actions workflow (`.github/workflows/deploy.yml`) that publishes the Blazor WebAssembly app and deploys it to **GitHub Pages** on every push to `main` — completely free.
+
+**One-time setup (in the GitHub UI):**
+1. Go to **Settings → Pages**.
+2. Under **Build and deployment → Source**, select **GitHub Actions**.
+
+That's it. Push to `main` (or run the workflow manually from the **Actions** tab) and the site goes live at:
+
+```
+https://<your-username>.github.io/<repo-name>/
+```
+
+The workflow automatically rewrites the WASM `<base href>` to the repo subpath, adds a `404.html` SPA fallback, and adds `.nojekyll` so the `_framework` folder is served. In-app links are relative, so the app works both at the domain root and under a project subpath.
+
+---
+
 ## 📦 Technologies Used
 
 | Technology | Purpose |
