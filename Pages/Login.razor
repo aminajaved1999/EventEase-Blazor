@@ -1,0 +1,82 @@
+@page "/login"
+@inject SessionService SessionService
+@inject NavigationManager NavManager
+
+<PageTitle>Sign In — EventEase</PageTitle>
+
+<div class="auth-page">
+    <div class="auth-card">
+        <h1>Welcome to EventEase</h1>
+        <p>Sign in to register for events and track your attendance.</p>
+
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="form-error-banner">⚠️ @_errorMessage</div>
+        }
+
+        <EditForm Model="@_loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label for="name">Your Name <span class="required">*</span></label>
+                <InputText id="name" @bind-Value="_loginModel.Name"
+                           class="form-control"
+                           placeholder="Jane Smith" />
+                <ValidationMessage For="@(() => _loginModel.Name)" class="field-error" />
+            </div>
+
+            <div class="form-group">
+                <label for="loginEmail">Email Address <span class="required">*</span></label>
+                <InputText id="loginEmail" @bind-Value="_loginModel.Email"
+                           class="form-control"
+                           placeholder="jane@example.com" />
+                <ValidationMessage For="@(() => _loginModel.Email)" class="field-error" />
+            </div>
+
+            <ValidationSummary class="validation-summary" />
+
+            <button type="submit" class="btn-primary btn-block">Sign In</button>
+        </EditForm>
+
+        <p class="auth-note">
+            No account needed — just enter your name and email to get started.
+        </p>
+    </div>
+</div>
+
+@code {
+    private LoginModel _loginModel = new();
+    private string _errorMessage = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Already logged in? redirect home
+        if (SessionService.IsLoggedIn)
+            NavManager.NavigateTo("/");
+    }
+
+    private void HandleLogin()
+    {
+        try
+        {
+            SessionService.Login(_loginModel.Name, _loginModel.Email);
+            NavManager.NavigateTo("/");
+        }
+        catch (ArgumentException ex)
+        {
+            _errorMessage = ex.Message;
+        }
+    }
+
+    /// <summary>Local form model for the login page.</summary>
+    private class LoginModel
+    {
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Please enter your name.")]
+        [System.ComponentModel.DataAnnotations.StringLength(100, MinimumLength = 2)]
+        public string Name { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Please enter your email.")]
+        [System.ComponentModel.DataAnnotations.EmailAddress(ErrorMessage = "Invalid email address.")]
+        public string Email { get; set; } = string.Empty;
+    }
+}

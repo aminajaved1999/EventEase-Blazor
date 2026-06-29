@@ -1,0 +1,158 @@
+@page "/attendance"
+@inject AttendanceService AttendanceService
+@inject EventService EventService
+@implements IDisposable
+
+<PageTitle>Attendance Tracker — EventEase</PageTitle>
+
+<div class="page-header">
+    <h1>Attendance Tracker</h1>
+    <p>Monitor registrations and attendance across all events.</p>
+</div>
+
+<!-- Summary Stats -->
+<div class="stats-row">
+    <div class="stat-card">
+        <span class="stat-number">@_totalRegistrations</span>
+        <span class="stat-label">Total Registrations</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">@_eventsWithAttendees</span>
+        <span class="stat-label">Events with Attendees</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">@_avgFill%</span>
+        <span class="stat-label">Avg. Capacity Used</span>
+    </div>
+</div>
+
+<!-- Per-Event Breakdown -->
+<h2 class="section-title">Event Breakdown</h2>
+<div class="attendance-table-wrap">
+    <table class="attendance-table">
+        <thead>
+            <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Registered</th>
+                <th>Capacity</th>
+                <th>Fill</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in _eventRows)
+            {
+                <tr class="@(row.FillPct >= 90 ? "row-warning" : "")">
+                    <td><a href="/events/@row.Event.Id">@row.Event.Name</a></td>
+                    <td>@row.Event.Date.ToString("MMM d, yyyy")</td>
+                    <td><span class="badge">@row.Event.Category</span></td>
+                    <td>@row.Count</td>
+                    <td>@row.Event.Capacity</td>
+                    <td>
+                        <div class="mini-bar">
+                            <div class="mini-bar__fill" style="width: @row.FillPct%"></div>
+                        </div>
+                        <span class="fill-label">@row.FillPct%</span>
+                    </td>
+                    <td>
+                        <a href="/events/@row.Event.Id/register" class="btn-sm">Register</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- All Registrations List -->
+@if (_allRegistrations.Count > 0)
+{
+    <h2 class="section-title">All Registrations</h2>
+    <div class="attendance-table-wrap">
+        <table class="attendance-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Ticket</th>
+                    <th>Event</th>
+                    <th>Registered At</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var reg in _allRegistrations)
+                {
+                    var eventName = EventService.GetEventById(reg.EventId)?.Name ?? "Unknown";
+                    <tr>
+                        <td>@reg.Id</td>
+                        <td>@reg.FullName</td>
+                        <td>@reg.Email</td>
+                        <td>@reg.TicketType</td>
+                        <td><a href="/events/@reg.EventId">@eventName</a></td>
+                        <td>@reg.RegisteredAt.ToString("MMM d, HH:mm")</td>
+                        <td>
+                            <span class="status-badge @(reg.IsConfirmed ? "status-confirmed" : "status-pending")">
+                                @(reg.IsConfirmed ? "Confirmed" : "Pending")
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="empty-state">
+        <p>No registrations yet. <a href="/events">Browse events</a> to get started.</p>
+    </div>
+}
+
+@code {
+    private List<Registration> _allRegistrations = new();
+    private List<EventRow> _eventRows = new();
+    private int _totalRegistrations;
+    private int _eventsWithAttendees;
+    private int _avgFill;
+
+    protected override void OnInitialized()
+    {
+        AttendanceService.OnAttendanceChanged += Refresh;
+        LoadData();
+    }
+
+    private void Refresh()
+    {
+        LoadData();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void LoadData()
+    {
+        _allRegistrations = AttendanceService.GetAllRegistrations();
+        _totalRegistrations = _allRegistrations.Count;
+
+        var allEvents = EventService.GetEvents();
+        _eventRows = allEvents.Select(e =>
+        {
+            var count = AttendanceService.GetAttendanceCount(e.Id);
+            var fill = (int)Math.Min(100, (double)count / e.Capacity * 100);
+            return new EventRow(e, count, fill);
+        }).ToList();
+
+        _eventsWithAttendees = _eventRows.Count(r => r.Count > 0);
+        _avgFill = _eventRows.Count > 0
+            ? (int)_eventRows.Average(r => r.FillPct)
+            : 0;
+    }
+
+    public void Dispose()
+    {
+        AttendanceService.OnAttendanceChanged -= Refresh;
+    }
+
+    private record EventRow(Event Event, int Count, int FillPct);
+}

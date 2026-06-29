@@ -1,0 +1,116 @@
+@page "/events/{Id:int}"
+@inject EventService EventService
+@inject AttendanceService AttendanceService
+@inject SessionService SessionService
+
+<PageTitle>@(_event?.Name ?? "Event") — EventEase</PageTitle>
+
+@if (_event is null)
+{
+    <div class="not-found">
+        <h2>Event Not Found</h2>
+        <p>The event you're looking for doesn't exist or has been removed.</p>
+        <a href="/events" class="btn-primary">Back to Events</a>
+    </div>
+}
+else
+{
+    <div class="detail-hero" style="--bg: url('@_event.ImageUrl')">
+        <div class="detail-hero__overlay">
+            <span class="event-card__badge">@_event.Category</span>
+            <h1>@_event.Name</h1>
+            <div class="event-card__meta event-card__meta--light">
+                <span class="meta-item">📅 @_event.Date.ToString("MMMM d, yyyy")</span>
+                <span class="meta-item">📍 @_event.Location</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-body">
+        <div class="detail-main">
+            <section class="detail-section">
+                <h2>About This Event</h2>
+                <p>@_event.Description</p>
+            </section>
+
+            <section class="detail-section">
+                <h2>Attendance</h2>
+                <div class="attendance-summary">
+                    <div class="attendance-stat">
+                        <strong>@_attendanceCount</strong>
+                        <span>Registered</span>
+                    </div>
+                    <div class="attendance-stat">
+                        <strong>@(_event.Capacity - _attendanceCount)</strong>
+                        <span>Spots Left</span>
+                    </div>
+                    <div class="attendance-stat">
+                        <strong>@_event.Capacity</strong>
+                        <span>Capacity</span>
+                    </div>
+                </div>
+
+                <div class="capacity-bar capacity-bar--lg">
+                    <div class="capacity-bar__fill"
+                         style="width: @_fillPercent%">
+                    </div>
+                </div>
+                <p class="capacity-label">@_fillPercent% capacity filled</p>
+            </section>
+        </div>
+
+        <aside class="detail-sidebar">
+            <div class="sidebar-card">
+                <h3>Register for This Event</h3>
+
+                @if (_isFull)
+                {
+                    <p class="sold-out">⛔ This event is at full capacity.</p>
+                }
+                else if (_alreadyRegistered)
+                {
+                    <p class="already-reg">✅ You are registered for this event.</p>
+                    <a href="/attendance" class="btn-secondary btn-block">View My Registrations</a>
+                }
+                else
+                {
+                    <p>Secure your spot today. Registration is free.</p>
+                    <a href="/events/@Id/register" class="btn-primary btn-block">Register Now</a>
+                }
+
+                <div class="sidebar-meta">
+                    <div><strong>Date</strong><span>@_event.Date.ToString("ddd, MMM d yyyy")</span></div>
+                    <div><strong>Location</strong><span>@_event.Location</span></div>
+                    <div><strong>Category</strong><span>@_event.Category</span></div>
+                </div>
+            </div>
+        </aside>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Event? _event;
+    private int _attendanceCount;
+    private int _fillPercent;
+    private bool _isFull;
+    private bool _alreadyRegistered;
+
+    protected override void OnParametersSet()
+    {
+        _event = EventService.GetEventById(Id);
+
+        if (_event is not null)
+        {
+            _attendanceCount = AttendanceService.GetAttendanceCount(Id);
+            _fillPercent = (int)Math.Min(100, (double)_attendanceCount / _event.Capacity * 100);
+            _isFull = _attendanceCount >= _event.Capacity;
+            _alreadyRegistered = SessionService.HasRegisteredFor(Id);
+
+            // Track view for session analytics
+            SessionService.TrackEventView(Id);
+        }
+    }
+}

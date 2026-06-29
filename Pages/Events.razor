@@ -1,0 +1,95 @@
+@page "/events"
+@inject EventService EventService
+@inject AttendanceService AttendanceService
+
+<PageTitle>Browse Events — EventEase</PageTitle>
+
+<div class="page-header">
+    <h1>Browse Events</h1>
+    <p>Discover upcoming corporate and social events.</p>
+</div>
+
+<div class="filter-bar">
+    <div class="search-wrap">
+        <input type="text"
+               class="form-control search-input"
+               placeholder="Search events by name, location…"
+               @bind="_searchTerm"
+               @bind:event="oninput"
+               @bind:after="ApplyFilters" />
+        @if (!string.IsNullOrEmpty(_searchTerm))
+        {
+            <button class="clear-search" @onclick="ClearSearch">✕</button>
+        }
+    </div>
+
+    <div class="category-filters">
+        <button class="@CategoryClass("All")" @onclick='() => SelectCategory("All")'>All</button>
+        @foreach (var cat in _categories)
+        {
+            var c = cat; // capture loop variable
+            <button class="@CategoryClass(c)" @onclick="() => SelectCategory(c)">@c</button>
+        }
+    </div>
+</div>
+
+@if (_filteredEvents.Count == 0)
+{
+    <div class="empty-state">
+        <p>No events match your search. <button class="link-btn" @onclick="ClearFilters">Clear filters</button></p>
+    </div>
+}
+else
+{
+    <p class="result-count">Showing @_filteredEvents.Count event@(_filteredEvents.Count == 1 ? "" : "s")</p>
+
+    <div class="event-grid">
+        @foreach (var evt in _filteredEvents)
+        {
+            <EventCard Event="evt"
+                       AttendanceCount="AttendanceService.GetAttendanceCount(evt.Id)" />
+        }
+    </div>
+}
+
+@code {
+    private List<Event> _allEvents = new();
+    private List<Event> _filteredEvents = new();
+    private List<string> _categories = new();
+    private string _searchTerm = string.Empty;
+    private string _selectedCategory = "All";
+
+    protected override void OnInitialized()
+    {
+        _allEvents = EventService.GetEvents();
+        _categories = EventService.GetCategories();
+        _filteredEvents = _allEvents;
+    }
+
+    private void ApplyFilters()
+    {
+        _filteredEvents = EventService.GetEvents(_searchTerm, _selectedCategory);
+    }
+
+    private void SelectCategory(string category)
+    {
+        _selectedCategory = category;
+        ApplyFilters();
+    }
+
+    private void ClearSearch()
+    {
+        _searchTerm = string.Empty;
+        ApplyFilters();
+    }
+
+    private void ClearFilters()
+    {
+        _searchTerm = string.Empty;
+        _selectedCategory = "All";
+        ApplyFilters();
+    }
+
+    private string CategoryClass(string cat) =>
+        cat == _selectedCategory ? "filter-btn filter-btn--active" : "filter-btn";
+}

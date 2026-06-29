@@ -1,0 +1,66 @@
+@page "/"
+@inject EventService EventService
+@inject AttendanceService AttendanceService
+
+<PageTitle>EventEase — Corporate &amp; Social Event Management</PageTitle>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Find &amp; Register for<br /><span class="hero-highlight">Exceptional Events</span></h1>
+        <p class="hero-subtitle">
+            Discover corporate summits, networking mixers, gala dinners, and more.
+            EventEase makes registration effortless.
+        </p>
+        <div class="hero-actions">
+            <a href="/events" class="btn-primary btn-lg">Browse All Events</a>
+            <a href="/attendance" class="btn-outline btn-lg">View Attendance</a>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <h2>Featured Events</h2>
+        <a href="/events" class="see-all">See all →</a>
+    </div>
+
+    <div class="event-grid">
+        @foreach (var evt in _featuredEvents)
+        {
+            <EventCard Event="evt"
+                       AttendanceCount="AttendanceService.GetAttendanceCount(evt.Id)"
+                       IsHighlighted="@(_featuredEvents.IndexOf(evt) == 0)" />
+        }
+    </div>
+</section>
+
+<section class="stats-bar">
+    <div class="stat">
+        <span class="stat-number">@_totalEvents</span>
+        <span class="stat-label">Events</span>
+    </div>
+    <div class="stat">
+        <span class="stat-number">@_totalCategories</span>
+        <span class="stat-label">Categories</span>
+    </div>
+    <div class="stat">
+        <span class="stat-number">@_totalRegistrations</span>
+        <span class="stat-label">Registrations</span>
+    </div>
+</section>
+
+@code {
+    private List<Event> _featuredEvents = new();
+    private int _totalEvents;
+    private int _totalCategories;
+    private int _totalRegistrations;
+
+    protected override void OnInitialized()
+    {
+        var all = EventService.GetEvents();
+        _featuredEvents = all.Take(3).ToList();
+        _totalEvents = all.Count;
+        _totalCategories = EventService.GetCategories().Count;
+        _totalRegistrations = AttendanceService.GetAllRegistrations().Count;
+    }
+}

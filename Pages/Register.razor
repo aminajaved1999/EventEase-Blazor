@@ -1,0 +1,57 @@
+@page "/events/{Id:int}/register"
+@inject EventService EventService
+@inject NavigationManager NavManager
+
+<PageTitle>Register — EventEase</PageTitle>
+
+@if (_event is null)
+{
+    <div class="not-found">
+        <h2>Event Not Found</h2>
+        <p>We couldn't find that event.</p>
+        <a href="/events" class="btn-primary">Browse Events</a>
+    </div>
+}
+else
+{
+    <div class="page-header">
+        <a href="/events/@Id" class="back-link">← @_event.Name</a>
+        <h1>Register for Event</h1>
+        <p>Complete the form below to secure your spot at <strong>@_event.Name</strong>.</p>
+    </div>
+
+    <div class="register-layout">
+        <div class="register-form-col">
+            <RegistrationForm EventId="Id" OnCancel="GoBack" />
+        </div>
+
+        <aside class="register-summary">
+            <h3>Event Summary</h3>
+            <img src="@_event.ImageUrl" alt="@_event.Name" class="summary-img"
+                 onerror="this.src='https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400'" />
+            <div class="summary-details">
+                <p><strong>@_event.Name</strong></p>
+                <p>📅 @_event.Date.ToString("MMMM d, yyyy")</p>
+                <p>📍 @_event.Location</p>
+                <p>🏷️ @_event.Category</p>
+            </div>
+        </aside>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Event? _event;
+
+    protected override void OnParametersSet()
+    {
+        _event = EventService.GetEventById(Id);
+    }
+
+    private void GoBack()
+    {
+        NavManager.NavigateTo($"/events/{Id}");
+    }
+}

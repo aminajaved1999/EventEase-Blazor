@@ -1,0 +1,72 @@
+@inherits LayoutComponentBase
+@inject SessionService SessionService
+@implements IDisposable
+
+<div class="app-shell">
+    <header class="app-header">
+        <div class="header-inner">
+            <a href="/" class="brand">
+                <span class="brand-icon">🎫</span>
+                <span class="brand-name">EventEase</span>
+            </a>
+
+            <nav class="main-nav">
+                <NavLink href="/" Match="NavLinkMatch.All" class="nav-link">
+                    Home
+                </NavLink>
+                <NavLink href="/events" class="nav-link">
+                    Browse Events
+                </NavLink>
+                <NavLink href="/attendance" class="nav-link">
+                    Attendance
+                </NavLink>
+            </nav>
+
+            <div class="header-actions">
+                @if (SessionService.IsLoggedIn)
+                {
+                    <span class="session-greeting">
+                        👋 @SessionService.CurrentSession.UserName
+                    </span>
+                    <button class="btn-outline-sm" @onclick="Logout">Sign Out</button>
+                }
+                else
+                {
+                    <NavLink href="/login" class="btn-primary-sm">Sign In</NavLink>
+                }
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <article>
+            @Body
+        </article>
+    </main>
+
+    <footer class="app-footer">
+        <p>&copy; 2025 EventEase — Corporate &amp; Social Event Management</p>
+    </footer>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        SessionService.OnSessionChanged += OnSessionStateChanged;
+    }
+
+    private void OnSessionStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Logout()
+    {
+        SessionService.Logout();
+    }
+
+    public void Dispose()
+    {
+        SessionService.OnSessionChanged -= OnSessionStateChanged;
+    }
+}

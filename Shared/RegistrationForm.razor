@@ -1,0 +1,164 @@
+@*
+    RegistrationForm.razor
+    Standalone, reusable registration form with DataAnnotations validation.
+    Parent passes the EventId; this component handles the full registration flow.
+*@
+
+@inject AttendanceService AttendanceService
+@inject SessionService SessionService
+@inject NavigationManager NavManager
+
+<div class="reg-form-wrap">
+    @if (_submitted)
+    {
+        <div class="success-panel">
+            <div class="success-icon">✅</div>
+            <h3>You're Registered!</h3>
+            <p>Thanks, <strong>@_confirmedName</strong>! A confirmation has been sent to <strong>@_confirmedEmail</strong>.</p>
+            <p class="reg-id">Registration ID: <code>#@_confirmedId</code></p>
+            <div class="success-actions">
+                <a href="/events" class="btn-secondary">Browse More Events</a>
+                <a href="/attendance" class="btn-primary">View Attendance</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <div class="form-error-banner">
+                    ⚠️ @_errorMessage
+                </div>
+            }
+
+            <div class="form-group">
+                <label for="fullName">Full Name <span class="required">*</span></label>
+                <InputText id="fullName" @bind-Value="_model.FullName"
+                           class="form-control"
+                           placeholder="Jane Smith" />
+                <ValidationMessage For="@(() => _model.FullName)" class="field-error" />
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <InputText id="email" @bind-Value="_model.Email"
+                           class="form-control"
+                           placeholder="jane@example.com" />
+                <ValidationMessage For="@(() => _model.Email)" class="field-error" />
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number <span class="required">*</span></label>
+                <InputText id="phone" @bind-Value="_model.Phone"
+                           class="form-control"
+                           placeholder="+1 (555) 000-0000" />
+                <ValidationMessage For="@(() => _model.Phone)" class="field-error" />
+            </div>
+
+            <div class="form-group">
+                <label for="ticketType">Ticket Type <span class="required">*</span></label>
+                <InputSelect id="ticketType" @bind-Value="_model.TicketType" class="form-control">
+                    <option value="Standard">Standard</option>
+                    <option value="VIP">VIP</option>
+                    <option value="Virtual">Virtual (Online)</option>
+                </InputSelect>
+                <ValidationMessage For="@(() => _model.TicketType)" class="field-error" />
+            </div>
+
+            <ValidationSummary class="validation-summary" />
+
+            <div class="form-actions">
+                <button type="button" class="btn-outline" @onclick="Cancel">Cancel</button>
+                <button type="submit" class="btn-primary" disabled="@_isSubmitting">
+                    @if (_isSubmitting)
+                    {
+                        <span>Registering…</span>
+                    }
+                    else
+                    {
+                        <span>Complete Registration</span>
+                    }
+                </button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public int EventId { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private Registration _model = new();
+    private bool _submitted = false;
+    private bool _isSubmitting = false;
+    private string _errorMessage = string.Empty;
+    private string _confirmedName = string.Empty;
+    private string _confirmedEmail = string.Empty;
+    private int _confirmedId = 0;
+
+    // Tracks whether the form was submitted with errors (to style fields)
+    private bool _attemptedSubmit = false;
+
+    protected override void OnParametersSet()
+    {
+        _model = new Registration { EventId = EventId };
+
+        // Pre-fill if user is logged in
+        if (SessionService.IsLoggedIn)
+        {
+            _model.FullName = SessionService.CurrentSession.UserName;
+            _model.Email = SessionService.CurrentSession.Email;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        _isSubmitting = true;
+        _errorMessage = string.Empty;
+
+        try
+        {
+            // Simulate brief async operation (API call in production)
+            await Task.Delay(400);
+
+            var result = AttendanceService.Register(_model);
+            SessionService.TrackRegistration(EventId);
+
+            _confirmedName = result.FullName;
+            _confirmedEmail = result.Email;
+            _confirmedId = result.Id;
+            _submitted = true;
+        }
+        catch (InvalidOperationException ex)
+        {
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        _attemptedSubmit = true;
+        _errorMessage = "Please correct the errors below before submitting.";
+    }
+
+    private async Task Cancel()
+    {
+        if (OnCancel.HasDelegate)
+            await OnCancel.InvokeAsync();
+        else
+            NavManager.NavigateTo($"/events/{EventId}");
+    }
+
+    // Returns true if the field has a validation error after submit was attempted
+    private bool IsFieldInvalid(string fieldName) => false; // Handled by ValidationMessage
+}

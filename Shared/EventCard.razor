@@ -1,0 +1,76 @@
+@* 
+    EventCard.razor
+    Reusable component that displays a single event's summary.
+    Accepts an Event parameter from a parent and raises a callback when selected.
+    
+    Usage:
+        <EventCard Event="myEvent" OnSelect="HandleSelect" ShowBadge="true" />
+*@
+
+<div class="event-card @(IsHighlighted ? "event-card--highlighted" : "")">
+    <div class="event-card__image-wrap">
+        <img src="@Event.ImageUrl"
+             alt="@Event.Name"
+             class="event-card__image"
+             onerror="this.src='https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600'" />
+        <span class="event-card__badge">@Event.Category</span>
+    </div>
+
+    <div class="event-card__body">
+        <h3 class="event-card__title">@Event.Name</h3>
+
+        <div class="event-card__meta">
+            <span class="meta-item">
+                📅 @Event.Date.ToString("MMMM d, yyyy")
+            </span>
+            <span class="meta-item">
+                📍 @Event.Location
+            </span>
+            <span class="meta-item">
+                👥 @AttendanceCount / @Event.Capacity registered
+            </span>
+        </div>
+
+        <p class="event-card__description">
+            @(Event.Description.Length > 120
+                ? Event.Description[..120] + "…"
+                : Event.Description)
+        </p>
+
+        <div class="event-card__footer">
+            <div class="capacity-bar">
+                <div class="capacity-bar__fill"
+                     style="width: @(Math.Min(100, (int)((double)AttendanceCount / Event.Capacity * 100)))%">
+                </div>
+            </div>
+
+            <div class="event-card__actions">
+                <a href="/events/@Event.Id" class="btn-secondary">Details</a>
+                <a href="/events/@Event.Id/register" class="btn-primary">Register</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>The event to display. Required.</summary>
+    [Parameter, EditorRequired]
+    public Event Event { get; set; } = default!;
+
+    /// <summary>Current registration count for the capacity bar.</summary>
+    [Parameter]
+    public int AttendanceCount { get; set; } = 0;
+
+    /// <summary>Highlights the card (e.g., featured event).</summary>
+    [Parameter]
+    public bool IsHighlighted { get; set; } = false;
+
+    /// <summary>Fires when the parent needs to know this card was selected.</summary>
+    [Parameter]
+    public EventCallback<Event> OnSelect { get; set; }
+
+    private async Task HandleSelect()
+    {
+        await OnSelect.InvokeAsync(Event);
+    }
+}
