@@ -1,5 +1,11 @@
 # 🎫 EventEase — Blazor WebAssembly Event Management App
 
+A portfolio website built as the capstone project for the 
+**Blazor for Front-End Development** course, part of the 
+**Microsoft Front-End Developer Professional Certificate** on Coursera.
+
+---
+
 > **Blazor for Front-End Development — Activities 1, 2 & 3**
 > Built with C# · Blazor WebAssembly · .NET 8 · Microsoft Copilot
 
