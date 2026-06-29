@@ -1,29 +1,25 @@
-# ASP.NET Core / Blazor
+## .NET
 bin/
 obj/
-wwwroot/
 *.user
 *.suo
-*.userosscache
-*.sln.docstates
-*.log
-.idea/
 .vs/
 .vscode/
+*.swp
 
-# User-specific files
-appsettings.Development.json
-appsettings.Production.json
-appsettings.Staging.json
+## NuGet
+*.nupkg
+**/packages/
+!**/packages/build/
 
-# JetBrains Rider files
-.idea/
+## Build artifacts
+publish/
+dist/
 
-# Mac-specific files
+## OS
 .DS_Store
+Thumbs.db
 
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
+## Rider
+.idea/
+*.sln.iml
