@@ -9,13 +9,13 @@
     <div class="not-found">
         <h2>Event Not Found</h2>
         <p>We couldn't find that event.</p>
-        <a href="/events" class="btn-primary">Browse Events</a>
+        <a href="events" class="btn-primary">Browse Events</a>
     </div>
 }
 else
 {
     <div class="page-header">
-        <a href="/events/@Id" class="back-link">← @_event.Name</a>
+        <a href="events/@Id" class="back-link">← @_event.Name</a>
         <h1>Register for Event</h1>
         <p>Complete the form below to secure your spot at <strong>@_event.Name</strong>.</p>
     </div>
@@ -52,6 +52,6 @@ else
 
     private void GoBack()
     {
-        NavManager.NavigateTo($"/events/{Id}");
+        NavManager.NavigateTo($"events/{Id}");
     }
 }
