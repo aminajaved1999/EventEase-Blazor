@@ -52,7 +52,7 @@
     {
         // Already logged in? redirect home
         if (SessionService.IsLoggedIn)
-            NavManager.NavigateTo("/");
+            NavManager.NavigateTo("");
     }
 
     private void HandleLogin()
@@ -60,7 +60,7 @@
         try
         {
             SessionService.Login(_loginModel.Name, _loginModel.Email);
-            NavManager.NavigateTo("/");
+            NavManager.NavigateTo("");
         }
         catch (ArgumentException ex)
         {

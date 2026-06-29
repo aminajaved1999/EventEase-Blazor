@@ -17,8 +17,8 @@
             <p>Thanks, <strong>@_confirmedName</strong>! A confirmation has been sent to <strong>@_confirmedEmail</strong>.</p>
             <p class="reg-id">Registration ID: <code>#@_confirmedId</code></p>
             <div class="success-actions">
-                <a href="/events" class="btn-secondary">Browse More Events</a>
-                <a href="/attendance" class="btn-primary">View Attendance</a>
+                <a href="events" class="btn-secondary">Browse More Events</a>
+                <a href="attendance" class="btn-primary">View Attendance</a>
             </div>
         </div>
     }
@@ -156,7 +156,7 @@
         if (OnCancel.HasDelegate)
             await OnCancel.InvokeAsync();
         else
-            NavManager.NavigateTo($"/events/{EventId}");
+            NavManager.NavigateTo($"events/{EventId}");
     }
 
     // Returns true if the field has a validation error after submit was attempted

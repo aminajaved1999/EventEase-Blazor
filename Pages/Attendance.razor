@@ -45,7 +45,7 @@
             @foreach (var row in _eventRows)
             {
                 <tr class="@(row.FillPct >= 90 ? "row-warning" : "")">
-                    <td><a href="/events/@row.Event.Id">@row.Event.Name</a></td>
+                    <td><a href="events/@row.Event.Id">@row.Event.Name</a></td>
                     <td>@row.Event.Date.ToString("MMM d, yyyy")</td>
                     <td><span class="badge">@row.Event.Category</span></td>
                     <td>@row.Count</td>
@@ -57,7 +57,7 @@
                         <span class="fill-label">@row.FillPct%</span>
                     </td>
                     <td>
-                        <a href="/events/@row.Event.Id/register" class="btn-sm">Register</a>
+                        <a href="events/@row.Event.Id/register" class="btn-sm">Register</a>
                     </td>
                 </tr>
             }
@@ -91,7 +91,7 @@
                         <td>@reg.FullName</td>
                         <td>@reg.Email</td>
                         <td>@reg.TicketType</td>
-                        <td><a href="/events/@reg.EventId">@eventName</a></td>
+                        <td><a href="events/@reg.EventId">@eventName</a></td>
                         <td>@reg.RegisteredAt.ToString("MMM d, HH:mm")</td>
                         <td>
                             <span class="status-badge @(reg.IsConfirmed ? "status-confirmed" : "status-pending")">
@@ -107,7 +107,7 @@
 else
 {
     <div class="empty-state">
-        <p>No registrations yet. <a href="/events">Browse events</a> to get started.</p>
+        <p>No registrations yet. <a href="events">Browse events</a> to get started.</p>
     </div>
 }
 
